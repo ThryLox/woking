@@ -40,6 +40,7 @@
       background: rgba(255, 255, 255, 0.8);
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       text-align: center;
+      position: relative;
     }
     
     header h1 {
@@ -65,7 +66,7 @@
       background: var(--secondary-color);
     }
     
-    /* Glassmorphism Container (UI remains semi-transparent) */
+    /* Glassmorphism Container */
     .container {
       width: 90%;
       max-width: 800px;
@@ -98,17 +99,23 @@
       color: var(--primary-color);
     }
     
-    /* Table styling */
+    /* Table wrapper for horizontal scrolling on small devices */
+    .table-wrapper {
+      overflow-x: auto;
+    }
+    
     table {
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 20px;
+      min-width: 320px;
     }
     
     th, td {
       padding: 12px 15px;
       border-bottom: 1px solid #ddd;
       text-align: left;
+      white-space: nowrap;
     }
     
     th {
@@ -164,7 +171,7 @@
       margin-top: 40px;
     }
     
-    /* Responsive design */
+    /* Responsive design adjustments */
     @media (max-width: 600px) {
       header h1 {
         font-size: 2rem;
@@ -174,6 +181,23 @@
       }
       .done-btn {
         width: 150px;
+        font-size: 1rem;
+      }
+      table, th, td {
+        font-size: 0.9rem;
+      }
+    }
+    
+    @media (max-width: 400px) {
+      .container {
+        padding: 20px;
+      }
+      header {
+        padding: 15px;
+      }
+      #toggleTheme {
+        padding: 6px 10px;
+        font-size: 0.8rem;
       }
     }
     
@@ -189,7 +213,7 @@
     
     body.dark header {
       background: rgba(0, 0, 0, 0.8);
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
     }
     
     body.dark .container {
@@ -213,169 +237,175 @@
 </head>
 <body>
   <header>
-    <h1>Tracker 💪</h1>
+    <h1> Tracker 💪</h1>
     <button id="toggleTheme">Toggle Theme</button>
   </header>
   
   <div id="workoutContainer" class="container"></div>
   
   <script>
-    // Workout templates for each day
+    // Workout templates for each day (table wrapped in .table-wrapper for scrolling)
     const workouts = {
       monday: `
         <h2>Workout A – Monday 🏋️‍♂️</h2>
-        <table>
-          <tr>
-            <th>Exercise</th>
-            <th>Sets</th>
-            <th>Reps</th>
-            <th>Notes</th>
-            <th>Done?</th>
-          </tr>
-          <tr>
-            <td>SQUATS</td>
-            <td>3</td>
-            <td>5–8</td>
-            <td>Focus on depth &amp; form</td>
-            <td class="checkbox"><input type="checkbox"></td>
-          </tr>
-          <tr>
-            <td>BENCH PRESS / PUSH-UP</td>
-            <td>3</td>
-            <td>6–8</td>
-            <td>Adapt as needed</td>
-            <td class="checkbox"><input type="checkbox"></td>
-          </tr>
-          <tr>
-            <td>BARBELL/DUMBBELL ROW</td>
-            <td>3</td>
-            <td>8–10</td>
-            <td>Keep back flat</td>
-            <td class="checkbox"><input type="checkbox"></td>
-          </tr>
-          <tr>
-            <td>OVERHEAD PRESS</td>
-            <td>3</td>
-            <td>6–8</td>
-            <td>Tight core</td>
-            <td class="checkbox"><input type="checkbox"></td>
-          </tr>
-          <tr>
-            <td>Accessory/Core:<br>Planks / Leg Raises</td>
-            <td>3</td>
-            <td>30–60 sec<br>or 10–15 reps</td>
-            <td></td>
-            <td class="checkbox"><input type="checkbox"></td>
-          </tr>
-        </table>
+        <div class="table-wrapper">
+          <table>
+            <tr>
+              <th>Exercise</th>
+              <th>Sets</th>
+              <th>Reps</th>
+              <th>Notes</th>
+              <th>Done?</th>
+            </tr>
+            <tr>
+              <td>SQUATS</td>
+              <td>3</td>
+              <td>5–8</td>
+              <td>Focus on depth &amp; form</td>
+              <td class="checkbox"><input type="checkbox"></td>
+            </tr>
+            <tr>
+              <td>BENCH PRESS / PUSH-UP</td>
+              <td>3</td>
+              <td>6–8</td>
+              <td>Adapt as needed</td>
+              <td class="checkbox"><input type="checkbox"></td>
+            </tr>
+            <tr>
+              <td>BARBELL/DUMBBELL ROW</td>
+              <td>3</td>
+              <td>8–10</td>
+              <td>Keep back flat</td>
+              <td class="checkbox"><input type="checkbox"></td>
+            </tr>
+            <tr>
+              <td>OVERHEAD PRESS</td>
+              <td>3</td>
+              <td>6–8</td>
+              <td>Tight core</td>
+              <td class="checkbox"><input type="checkbox"></td>
+            </tr>
+            <tr>
+              <td>Accessory/Core:<br>Planks / Leg Raises</td>
+              <td>3</td>
+              <td>30–60 sec<br>or 10–15 reps</td>
+              <td></td>
+              <td class="checkbox"><input type="checkbox"></td>
+            </tr>
+          </table>
+        </div>
         <button id="doneButton" class="done-btn">Done ✅</button>
       `,
       wednesday: `
         <h2>Workout B – Wednesday 🤸‍♀️</h2>
-        <table>
-          <tr>
-            <th>Exercise</th>
-            <th>Sets</th>
-            <th>Reps</th>
-            <th>Notes</th>
-            <th>Done?</th>
-          </tr>
-          <tr>
-            <td>DEADLIFTS</td>
-            <td>3</td>
-            <td>5–6</td>
-            <td>Neutral spine</td>
-            <td class="checkbox"><input type="checkbox"></td>
-          </tr>
-          <tr>
-            <td>PULL-UPS / CHIN-UPS</td>
-            <td>3</td>
-            <td>6–10</td>
-            <td>Assisted if needed</td>
-            <td class="checkbox"><input type="checkbox"></td>
-          </tr>
-          <tr>
-            <td>INCLINE DUMBBELL PRESS</td>
-            <td>3</td>
-            <td>8–10</td>
-            <td>Focus on chest</td>
-            <td class="checkbox"><input type="checkbox"></td>
-          </tr>
-          <tr>
-            <td>GOBLET SQUATS / LUNGES</td>
-            <td>3</td>
-            <td>8–10 per leg</td>
-            <td>Add resistance</td>
-            <td class="checkbox"><input type="checkbox"></td>
-          </tr>
-          <tr>
-            <td>Accessory/Core:<br>Russian Twists / Bicycle Crunches</td>
-            <td>3</td>
-            <td>20 twists<br>or 15–20 per side</td>
-            <td>Controlled</td>
-            <td class="checkbox"><input type="checkbox"></td>
-          </tr>
-        </table>
+        <div class="table-wrapper">
+          <table>
+            <tr>
+              <th>Exercise</th>
+              <th>Sets</th>
+              <th>Reps</th>
+              <th>Notes</th>
+              <th>Done?</th>
+            </tr>
+            <tr>
+              <td>DEADLIFTS</td>
+              <td>3</td>
+              <td>5–6</td>
+              <td>Neutral spine</td>
+              <td class="checkbox"><input type="checkbox"></td>
+            </tr>
+            <tr>
+              <td>PULL-UPS / CHIN-UPS</td>
+              <td>3</td>
+              <td>6–10</td>
+              <td>Assisted if needed</td>
+              <td class="checkbox"><input type="checkbox"></td>
+            </tr>
+            <tr>
+              <td>INCLINE DUMBBELL PRESS</td>
+              <td>3</td>
+              <td>8–10</td>
+              <td>Focus on chest</td>
+              <td class="checkbox"><input type="checkbox"></td>
+            </tr>
+            <tr>
+              <td>GOBLET SQUATS / LUNGES</td>
+              <td>3</td>
+              <td>8–10 per leg</td>
+              <td>Add resistance</td>
+              <td class="checkbox"><input type="checkbox"></td>
+            </tr>
+            <tr>
+              <td>Accessory/Core:<br>Russian Twists / Bicycle Crunches</td>
+              <td>3</td>
+              <td>20 twists<br>or 15–20 per side</td>
+              <td>Controlled</td>
+              <td class="checkbox"><input type="checkbox"></td>
+            </tr>
+          </table>
+        </div>
         <button id="doneButton" class="done-btn">Done ✅</button>
       `,
       friday: `
         <h2>Workout C – Friday 🎉</h2>
-        <table>
-          <tr>
-            <th>Exercise</th>
-            <th>Sets</th>
-            <th>Reps</th>
-            <th>Notes</th>
-            <th>Done?</th>
-          </tr>
-          <tr>
-            <td>FRONT SQUATS / LEG PRESS</td>
-            <td>3</td>
-            <td>8</td>
-            <td>Maintain posture</td>
-            <td class="checkbox"><input type="checkbox"></td>
-          </tr>
-          <tr>
-            <td>CHEST PRESS (Dumbbell/Machine)</td>
-            <td>3</td>
-            <td>8–10</td>
-            <td>Smooth motion</td>
-            <td class="checkbox"><input type="checkbox"></td>
-          </tr>
-          <tr>
-            <td>ROW VARIATION</td>
-            <td>3</td>
-            <td>8–10</td>
-            <td>Keep proper form</td>
-            <td class="checkbox"><input type="checkbox"></td>
-          </tr>
-          <tr>
-            <td>LATERAL RAISES / FACE PULLS</td>
-            <td>3</td>
-            <td>12–15</td>
-            <td>Shoulder stability</td>
-            <td class="checkbox"><input type="checkbox"></td>
-          </tr>
-          <tr>
-            <td>Accessory/Core:<br>Ab Wheel Rollouts / Side Planks</td>
-            <td>3</td>
-            <td>8–10<br>or 30–45 sec</td>
-            <td></td>
-            <td class="checkbox"><input type="checkbox"></td>
-          </tr>
-        </table>
+        <div class="table-wrapper">
+          <table>
+            <tr>
+              <th>Exercise</th>
+              <th>Sets</th>
+              <th>Reps</th>
+              <th>Notes</th>
+              <th>Done?</th>
+            </tr>
+            <tr>
+              <td>FRONT SQUATS / LEG PRESS</td>
+              <td>3</td>
+              <td>8</td>
+              <td>Maintain posture</td>
+              <td class="checkbox"><input type="checkbox"></td>
+            </tr>
+            <tr>
+              <td>CHEST PRESS (Dumbbell/Machine)</td>
+              <td>3</td>
+              <td>8–10</td>
+              <td>Smooth motion</td>
+              <td class="checkbox"><input type="checkbox"></td>
+            </tr>
+            <tr>
+              <td>ROW VARIATION</td>
+              <td>3</td>
+              <td>8–10</td>
+              <td>Keep proper form</td>
+              <td class="checkbox"><input type="checkbox"></td>
+            </tr>
+            <tr>
+              <td>LATERAL RAISES / FACE PULLS</td>
+              <td>3</td>
+              <td>12–15</td>
+              <td>Shoulder stability</td>
+              <td class="checkbox"><input type="checkbox"></td>
+            </tr>
+            <tr>
+              <td>Accessory/Core:<br>Ab Wheel Rollouts / Side Planks</td>
+              <td>3</td>
+              <td>8–10<br>or 30–45 sec</td>
+              <td></td>
+              <td class="checkbox"><input type="checkbox"></td>
+            </tr>
+          </table>
+        </div>
         <button id="doneButton" class="done-btn">Done ✅</button>
       `
     };
-
+    
     // Determine today's workout (1 = Monday, 3 = Wednesday, 5 = Friday)
-    const day = new Date().getDay();
+    const currentDay = new Date().getDay();
     let workoutHTML = '';
-    if (day === 1) {
+    if (currentDay === 1) {
       workoutHTML = workouts.monday;
-    } else if (day === 3) {
+    } else if (currentDay === 3) {
       workoutHTML = workouts.wednesday;
-    } else if (day === 5) {
+    } else if (currentDay === 5) {
       workoutHTML = workouts.friday;
     } else {
       workoutHTML = `<div class="message">No workout scheduled for today!<br>Enjoy your rest day!</div>`;
@@ -442,7 +472,7 @@
         // Generate the PDF using jsPDF
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        const lines = doc.splitTextToSize(summary, 180); // wrap text at 180 units
+        const lines = doc.splitTextToSize(summary, 180);
         doc.text(lines, 10, 10);
         doc.save(`Workout-${dateStr}-${timeStr}.pdf`);
       });
