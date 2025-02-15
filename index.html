@@ -96,7 +96,7 @@
 
     <h2>Workout Notes</h2>
     <textarea id="notes" placeholder="Write your notes here..."></textarea>
-    <button onclick="saveNotes()">Save Notes</button>
+    <button onclick="shareNotes()">Share Notes</button>
 
     <script>
         const workouts = [
@@ -172,14 +172,23 @@
             loadNotes();
         }
 
-        function saveNotes() {
+        function shareNotes() {
             const notes = document.getElementById("notes").value;
-            localStorage.setItem("workoutNotes", notes);
 
-            // iPhone Notes App Trick (Opens email composer, can be saved as a note)
-            const subject = encodeURIComponent("Workout Notes - Blood & Guts");
-            const body = encodeURIComponent(notes);
-            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+            if (!notes.trim()) {
+                alert("Write some notes before sharing.");
+                return;
+            }
+
+            if (navigator.share) {
+                navigator.share({
+                    title: "Workout Notes - Blood & Guts",
+                    text: notes
+                })
+                .catch(error => console.log("Error sharing:", error));
+            } else {
+                alert("Sharing is not supported on this browser.");
+            }
         }
 
         function loadNotes() {
