@@ -1,488 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Modern Workout Tracker 💪</title>
-  <!-- Google Fonts for a modern look -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  <!-- jsPDF for text PDF generation -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <style>
-    :root {
-      --primary-color: #4CAF50;
-      --secondary-color: #3a9d4d;
-      --text-color: #333;
-      --bg-gradient: linear-gradient(135deg, #e0eafc, #cfdef3);
-    }
-    
-    /* Global resets */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: var(--bg-gradient);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: background 0.3s, color 0.3s;
-    }
-    
-    /* Header that scrolls normally */
-    header {
-      width: 100%;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.8);
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      position: relative;
-    }
-    
-    header h1 {
-      font-size: 2.5rem;
-      color: var(--primary-color);
-    }
-    
-    /* Toggle Theme Button */
-    #toggleTheme {
-      position: absolute;
-      right: 20px;
-      top: 20px;
-      padding: 8px 12px;
-      border: none;
-      border-radius: 5px;
-      background: var(--primary-color);
-      color: #fff;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    
-    #toggleTheme:hover {
-      background: var(--secondary-color);
-    }
-    
-    /* Glassmorphism Container */
-    .container {
-      width: 90%;
-      max-width: 800px;
-      margin: 40px auto;
-      background: rgba(255, 255, 255, 0.8);
-      border-radius: 15px;
-      padding: 30px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      backdrop-filter: blur(10px);
-      animation: fadeIn 1s ease;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    h2 {
-      text-align: center;
-      font-size: 2rem;
-      margin-bottom: 20px;
-      color: var(--primary-color);
-    }
-    
-    /* Workout date styling */
-    #workoutDate {
-      text-align: center;
-      margin-bottom: 20px;
-      font-size: 1.2rem;
-      color: var(--primary-color);
-    }
-    
-    /* Table wrapper for horizontal scrolling on small devices */
-    .table-wrapper {
-      overflow-x: auto;
-    }
-    
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-      min-width: 320px;
-    }
-    
-    th, td {
-      padding: 12px 15px;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
-      white-space: nowrap;
-    }
-    
-    th {
-      background-color: var(--primary-color);
-      color: #fff;
-    }
-    
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-    
-    tr:hover {
-      background-color: #f1f1f1;
-    }
-    
-    .checkbox {
-      text-align: center;
-    }
-    
-    input[type="checkbox"] {
-      width: 22px;
-      height: 22px;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    
-    input[type="checkbox"]:hover {
-      transform: scale(1.2);
-    }
-    
-    .done-btn {
-      display: block;
-      width: 200px;
-      margin: 20px auto;
-      padding: 12px;
-      background-color: var(--primary-color);
-      color: #fff;
-      border: none;
-      border-radius: 25px;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: background-color 0.3s, transform 0.3s;
-    }
-    
-    .done-btn:hover {
-      background-color: var(--secondary-color);
-      transform: translateY(-3px);
-    }
-    
-    .message {
-      text-align: center;
-      font-size: 1.5rem;
-      margin-top: 40px;
-    }
-    
-    /* Responsive design adjustments */
-    @media (max-width: 600px) {
-      header h1 {
-        font-size: 2rem;
-      }
-      h2 {
-        font-size: 1.5rem;
-      }
-      .done-btn {
-        width: 150px;
-        font-size: 1rem;
-      }
-      table, th, td {
-        font-size: 0.9rem;
-      }
-    }
-    
-    @media (max-width: 400px) {
-      .container {
-        padding: 20px;
-      }
-      header {
-        padding: 15px;
-      }
-      #toggleTheme {
-        padding: 6px 10px;
-        font-size: 0.8rem;
-      }
-    }
-    
-    /* Dark mode styles */
-    body.dark {
-      --primary-color: #90caf9;
-      --secondary-color: #64b5f6;
-      --text-color: #f5f5f5;
-      --bg-gradient: linear-gradient(135deg, #121212, #1e1e1e);
-      background: var(--bg-gradient);
-      color: var(--text-color);
-    }
-    
-    body.dark header {
-      background: rgba(0, 0, 0, 0.8);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-    }
-    
-    body.dark .container {
-      background: rgba(50, 50, 50, 0.8);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-    }
-    
-    body.dark table tr:nth-child(even) {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-    
-    body.dark table tr:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-    }
-    
-    body.dark table th,
-    body.dark table td {
-      color: var(--text-color);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood & Guts Training</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #121212;
+            color: #ddd;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        h1 {
+            font-size: 2.2em;
+            text-transform: uppercase;
+            color: #e63946;
+            font-weight: bold;
+        }
+        h2 {
+            text-transform: uppercase;
+            color: #f4a261;
+            font-size: 1.5em;
+        }
+        .workout-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #444;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(255, 255, 255, 0.1);
+        }
+        .workout-item {
+            background: #242424;
+            padding: 12px;
+            margin: 10px 0;
+            border-left: 5px solid #f4a261;
+            border-radius: 5px;
+            text-align: left;
+            font-size: 1.1em;
+        }
+        textarea {
+            width: 90%;
+            height: 100px;
+            background-color: #242424;
+            color: #ddd;
+            border: 1px solid #444;
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        button {
+            background-color: #e63946;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 10px;
+            text-transform: uppercase;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #c92b3a;
+        }
+        @media (max-width: 768px) {
+            .workout-container {
+                width: 90%;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            h2 {
+                font-size: 1.3em;
+            }
+            button {
+                font-size: 0.9em;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1> Tracker 💪</h1>
-    <button id="toggleTheme">Toggle Theme</button>
-  </header>
-  
-  <div id="workoutContainer" class="container"></div>
-  
-  <script>
-    // Workout templates for each day (table wrapped in .table-wrapper for scrolling)
-    const workouts = {
-      monday: `
-        <h2>Workout A – Monday 🏋️‍♂️</h2>
-        <div class="table-wrapper">
-          <table>
-            <tr>
-              <th>Exercise</th>
-              <th>Sets</th>
-              <th>Reps</th>
-              <th>Notes</th>
-              <th>Done?</th>
-            </tr>
-            <tr>
-              <td>SQUATS</td>
-              <td>3</td>
-              <td>5–8</td>
-              <td>Focus on depth &amp; form</td>
-              <td class="checkbox"><input type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>BENCH PRESS / PUSH-UP</td>
-              <td>3</td>
-              <td>6–8</td>
-              <td>Adapt as needed</td>
-              <td class="checkbox"><input type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>BARBELL/DUMBBELL ROW</td>
-              <td>3</td>
-              <td>8–10</td>
-              <td>Keep back flat</td>
-              <td class="checkbox"><input type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>OVERHEAD PRESS</td>
-              <td>3</td>
-              <td>6–8</td>
-              <td>Tight core</td>
-              <td class="checkbox"><input type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>Accessory/Core:<br>Planks / Leg Raises</td>
-              <td>3</td>
-              <td>30–60 sec<br>or 10–15 reps</td>
-              <td></td>
-              <td class="checkbox"><input type="checkbox"></td>
-            </tr>
-          </table>
-        </div>
-        <button id="doneButton" class="done-btn">Done ✅</button>
-      `,
-      wednesday: `
-        <h2>Workout B – Wednesday 🤸‍♀️</h2>
-        <div class="table-wrapper">
-          <table>
-            <tr>
-              <th>Exercise</th>
-              <th>Sets</th>
-              <th>Reps</th>
-              <th>Notes</th>
-              <th>Done?</th>
-            </tr>
-            <tr>
-              <td>DEADLIFTS</td>
-              <td>3</td>
-              <td>5–6</td>
-              <td>Neutral spine</td>
-              <td class="checkbox"><input type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>PULL-UPS / CHIN-UPS</td>
-              <td>3</td>
-              <td>6–10</td>
-              <td>Assisted if needed</td>
-              <td class="checkbox"><input type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>INCLINE DUMBBELL PRESS</td>
-              <td>3</td>
-              <td>8–10</td>
-              <td>Focus on chest</td>
-              <td class="checkbox"><input type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>GOBLET SQUATS / LUNGES</td>
-              <td>3</td>
-              <td>8–10 per leg</td>
-              <td>Add resistance</td>
-              <td class="checkbox"><input type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>Accessory/Core:<br>Russian Twists / Bicycle Crunches</td>
-              <td>3</td>
-              <td>20 twists<br>or 15–20 per side</td>
-              <td>Controlled</td>
-              <td class="checkbox"><input type="checkbox"></td>
-            </tr>
-          </table>
-        </div>
-        <button id="doneButton" class="done-btn">Done ✅</button>
-      `,
-      friday: `
-        <h2>Workout C – Friday 🎉</h2>
-        <div class="table-wrapper">
-          <table>
-            <tr>
-              <th>Exercise</th>
-              <th>Sets</th>
-              <th>Reps</th>
-              <th>Notes</th>
-              <th>Done?</th>
-            </tr>
-            <tr>
-              <td>FRONT SQUATS / LEG PRESS</td>
-              <td>3</td>
-              <td>8</td>
-              <td>Maintain posture</td>
-              <td class="checkbox"><input type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>CHEST PRESS (Dumbbell/Machine)</td>
-              <td>3</td>
-              <td>8–10</td>
-              <td>Smooth motion</td>
-              <td class="checkbox"><input type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>ROW VARIATION</td>
-              <td>3</td>
-              <td>8–10</td>
-              <td>Keep proper form</td>
-              <td class="checkbox"><input type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>LATERAL RAISES / FACE PULLS</td>
-              <td>3</td>
-              <td>12–15</td>
-              <td>Shoulder stability</td>
-              <td class="checkbox"><input type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>Accessory/Core:<br>Ab Wheel Rollouts / Side Planks</td>
-              <td>3</td>
-              <td>8–10<br>or 30–45 sec</td>
-              <td></td>
-              <td class="checkbox"><input type="checkbox"></td>
-            </tr>
-          </table>
-        </div>
-        <button id="doneButton" class="done-btn">Done ✅</button>
-      `
-    };
-    
-    // Determine today's workout (1 = Monday, 3 = Wednesday, 5 = Friday)
-    const currentDay = new Date().getDay();
-    let workoutHTML = '';
-    if (currentDay === 1) {
-      workoutHTML = workouts.monday;
-    } else if (currentDay === 3) {
-      workoutHTML = workouts.wednesday;
-    } else if (currentDay === 5) {
-      workoutHTML = workouts.friday;
-    } else {
-      workoutHTML = `<div class="message">No workout scheduled for today!<br>Enjoy your rest day!</div>`;
-    }
-    const container = document.getElementById("workoutContainer");
-    container.innerHTML = workoutHTML;
-    
-    // Insert current date element at the top of the container
-    const workoutDateEl = document.createElement("div");
-    workoutDateEl.id = "workoutDate";
-    workoutDateEl.innerText = "Workout Date: " + new Date().toLocaleDateString();
-    container.insertBefore(workoutDateEl, container.firstChild);
-    
-    // Initialize checkboxes from localStorage
-    function initCheckboxes() {
-      const checkboxes = container.querySelectorAll("input[type='checkbox']");
-      checkboxes.forEach((checkbox, index) => {
-        const savedState = localStorage.getItem("checkbox-" + index);
-        if (savedState === "true") {
-          checkbox.checked = true;
+
+    <h1>Blood & Guts Training</h1>
+    <h2 id="day-title">Loading Workout...</h2>
+
+    <div class="workout-container" id="workout-list">
+        <!-- Workout of the Day will be inserted here -->
+    </div>
+
+    <h2>Workout Notes</h2>
+    <textarea id="notes" placeholder="Write your notes here..."></textarea>
+    <button onclick="saveNotes()">Save Notes</button>
+
+    <script>
+        const workouts = [
+            { 
+                day: "Legs (Brutal Day)", 
+                exercises: [
+                    "Leg Extension (Pre-Exhaustion) – 1 x 8-10 reps",
+                    "Leg Press – 1 x 8-10 reps",
+                    "Hack Squats – 1 x 6-8 reps",
+                    "Lying Leg Curl – 1 x 8-10 reps",
+                    "Stiff-Leg Deadlift – 1 x 8-10 reps",
+                    "Seated Calf Raise – 1 x 10-12 reps",
+                    "Standing Calf Raise – 1 x 10-12 reps"
+                ]
+            },
+            { day: "Rest Day (Recovery & Growth!)", exercises: ["Recover & prepare for next session."] },
+            { 
+                day: "Chest & Biceps", 
+                exercises: [
+                    "Incline Barbell Press – 1 x 6-8 reps",
+                    "Machine Chest Press – 1 x 8-10 reps",
+                    "Dumbbell Flys – 1 x 8-10 reps",
+                    "Pec Deck Machine – 1 x 8-10 reps",
+                    "Barbell Curl – 1 x 6-8 reps",
+                    "Seated Dumbbell Curl – 1 x 8-10 reps",
+                    "Preacher Curl – 1 x 8-10 reps"
+                ]
+            },
+            { 
+                day: "Back & Rear Delts", 
+                exercises: [
+                    "Pullover Machine – 1 x 8-10 reps",
+                    "Underhand Lat Pulldown – 1 x 8-10 reps",
+                    "Bent-Over Barbell Row – 1 x 6-8 reps",
+                    "Deadlifts – 1 x 6-8 reps",
+                    "Dumbbell Rear Delt Fly – 1 x 8-10 reps",
+                    "Reverse Pec Deck – 1 x 8-10 reps"
+                ]
+            },
+            { day: "Rest Day (Recovery & Growth!)", exercises: ["Recover & prepare for next session."] },
+            { 
+                day: "Shoulders & Triceps", 
+                exercises: [
+                    "Seated Dumbbell Shoulder Press – 1 x 6-8 reps",
+                    "Dumbbell Lateral Raise – 1 x 8-10 reps",
+                    "Cable Lateral Raise – 1 x 8-10 reps",
+                    "Dips (Weighted) – 1 x 6-8 reps",
+                    "Lying Triceps Extension (EZ Bar) – 1 x 8-10 reps",
+                    "Rope Triceps Pushdown – 1 x 8-10 reps"
+                ]
+            }
+        ];
+
+        function loadWorkout() {
+            const today = new Date();
+            const startDate = new Date();
+            startDate.setDate(today.getDate() - 1); // Shift start by 1 day
+
+            const dayIndex = (Math.floor((today - startDate) / (1000 * 60 * 60 * 24))) % workouts.length;
+            const workout = workouts[dayIndex];
+
+            document.getElementById("day-title").innerText = `Today's Workout: ${workout.day}`;
+            const workoutList = document.getElementById("workout-list");
+            workoutList.innerHTML = "";
+
+            workout.exercises.forEach(exercise => {
+                let div = document.createElement("div");
+                div.className = "workout-item";
+                div.innerText = exercise;
+                workoutList.appendChild(div);
+            });
+
+            loadNotes();
         }
-        checkbox.addEventListener("change", function() {
-          localStorage.setItem("checkbox-" + index, checkbox.checked);
-        });
-      });
-    }
-    if (container.querySelector("table")) {
-      initCheckboxes();
-    }
-    
-    // Generate a text PDF using jsPDF when Done is clicked.
-    // The PDF will contain the date, time, and a list of completed exercises.
-    const doneButton = document.getElementById("doneButton");
-    if (doneButton) {
-      doneButton.addEventListener("click", function() {
-        // Get current date and time
-        const now = new Date();
-        const dateStr = now.toLocaleDateString();
-        const timeStr = now.toLocaleTimeString();
-        
-        // Collect completed exercises from the table rows (skip header)
-        let exerciseList = [];
-        const rows = container.querySelectorAll("table tr");
-        rows.forEach((row, index) => {
-          if (index === 0) return; // skip header row
-          const checkbox = row.querySelector("input[type='checkbox']");
-          if (checkbox && checkbox.checked) {
-            const exerciseName = row.cells[0].innerText;
-            exerciseList.push(exerciseName);
-          }
-        });
-        
-        // Create the text summary
-        let summary = `Workout Completed on ${dateStr} at ${timeStr}\n\n`;
-        if (exerciseList.length > 0) {
-          summary += "Exercises completed:\n";
-          exerciseList.forEach((ex, idx) => {
-            summary += `${idx + 1}. ${ex}\n`;
-          });
-        } else {
-          summary += "No exercises were marked as done.";
+
+        function saveNotes() {
+            const notes = document.getElementById("notes").value;
+            localStorage.setItem("workoutNotes", notes);
+
+            // iPhone Notes App Trick (Opens email composer, can be saved as a note)
+            const subject = encodeURIComponent("Workout Notes - Blood & Guts");
+            const body = encodeURIComponent(notes);
+            window.location.href = `mailto:?subject=${subject}&body=${body}`;
         }
-        
-        // Generate the PDF using jsPDF
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const lines = doc.splitTextToSize(summary, 180);
-        doc.text(lines, 10, 10);
-        doc.save(`Workout-${dateStr}-${timeStr}.pdf`);
-      });
-    }
-    
-    // Toggle theme (light/dark)
-    const toggleTheme = document.getElementById("toggleTheme");
-    toggleTheme.addEventListener("click", () => {
-      document.body.classList.toggle("dark");
-    });
-  </script>
+
+        function loadNotes() {
+            const savedNotes = localStorage.getItem("workoutNotes");
+            if (savedNotes) {
+                document.getElementById("notes").value = savedNotes;
+            }
+        }
+
+        loadWorkout();
+    </script>
+
 </body>
 </html>
