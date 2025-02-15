@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blood & Guts Training</title>
+    <title>Dorian Yates Blood & Guts Training</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -69,25 +69,11 @@
         button:hover {
             background-color: #c92b3a;
         }
-        @media (max-width: 768px) {
-            .workout-container {
-                width: 90%;
-            }
-            h1 {
-                font-size: 1.8em;
-            }
-            h2 {
-                font-size: 1.3em;
-            }
-            button {
-                font-size: 0.9em;
-            }
-        }
     </style>
 </head>
 <body>
 
-    <h1>Blood & Guts Training</h1>
+    <h1>Dorian Yates Blood & Guts Training</h1>
     <h2 id="day-title">Loading Workout...</h2>
     <p id="date"></p>
 
@@ -108,39 +94,58 @@
             { 
                 day: "Legs (Brutal Day)", 
                 exercises: [
-                    "Leg Extension (Pre-Exhaustion) – 1 x 8-10 reps",
+                    "Leg Extension – 1 x 8-10 reps",
                     "Leg Press – 1 x 8-10 reps",
-                    "Hack Squats – 1 x 6-8 reps",
+                    "Hack Squat – 1 x 6-8 reps",
                     "Lying Leg Curl – 1 x 8-10 reps",
                     "Stiff-Leg Deadlift – 1 x 8-10 reps",
                     "Seated Calf Raise – 1 x 10-12 reps",
                     "Standing Calf Raise – 1 x 10-12 reps"
                 ]
             },
-            { day: "Rest Day (Recovery & Growth!)", exercises: ["Recover & prepare for next session."] },
             { 
                 day: "Chest & Biceps", 
                 exercises: [
                     "Incline Barbell Press – 1 x 6-8 reps",
                     "Machine Chest Press – 1 x 8-10 reps",
                     "Dumbbell Flys – 1 x 8-10 reps",
-                    "Pec Deck Machine – 1 x 8-10 reps",
                     "Barbell Curl – 1 x 6-8 reps",
                     "Seated Dumbbell Curl – 1 x 8-10 reps",
                     "Preacher Curl – 1 x 8-10 reps"
                 ]
-            }
+            },
+            { 
+                day: "Back & Rear Delts", 
+                exercises: [
+                    "Pullover Machine – 1 x 8-10 reps",
+                    "Underhand Lat Pulldown – 1 x 8-10 reps",
+                    "Bent-Over Barbell Row – 1 x 6-8 reps",
+                    "Deadlifts – 1 x 6-8 reps",
+                    "Dumbbell Rear Delt Fly – 1 x 8-10 reps",
+                    "Reverse Pec Deck – 1 x 8-10 reps"
+                ]
+            },
+            { day: "Rest Day", exercises: ["Recover & prepare for next session."] },
+            { 
+                day: "Shoulders & Triceps", 
+                exercises: [
+                    "Seated Dumbbell Shoulder Press – 1 x 6-8 reps",
+                    "Dumbbell Lateral Raise – 1 x 8-10 reps",
+                    "Dips (Weighted) – 1 x 6-8 reps",
+                    "Lying Triceps Extension (EZ Bar) – 1 x 8-10 reps",
+                    "Rope Triceps Pushdown – 1 x 8-10 reps"
+                ]
+            },
+            { day: "Rest Day", exercises: ["Recover & prepare for next session."] }
         ];
 
         function loadWorkout() {
             const today = new Date();
-            const dateString = today.toDateString();
-            document.getElementById("date").innerText = `Date: ${dateString}`;
-
             const dayIndex = today.getDay() % workouts.length;
             const workout = workouts[dayIndex];
 
             document.getElementById("day-title").innerText = `Today's Workout: ${workout.day}`;
+            document.getElementById("date").innerText = `Date: ${today.toDateString()}`;
             const workoutList = document.getElementById("workout-list");
             workoutList.innerHTML = "";
 
@@ -154,53 +159,17 @@
             loadNotes();
         }
 
-        function saveNotes() {
+        function shareNotes() {
             const notes = document.getElementById("notes").value.trim();
             if (!notes) {
-                alert("Write something before saving!");
+                alert("Write something before sharing.");
                 return;
             }
 
-            const today = new Date();
-            const dateString = today.toDateString();
+            const today = new Date().toDateString();
             const workoutTitle = document.getElementById("day-title").innerText;
 
-            const noteEntry = {
-                date: dateString,
-                workout: workoutTitle,
-                notes: notes
-            };
-
-            let storedNotes = JSON.parse(localStorage.getItem("workoutNotes")) || [];
-            storedNotes.push(noteEntry);
-            localStorage.setItem("workoutNotes", JSON.stringify(storedNotes));
-
-            loadNotes();
-            alert("Notes saved successfully!");
-        }
-
-        function loadNotes() {
-            const savedNotes = JSON.parse(localStorage.getItem("workoutNotes")) || [];
-            const savedNotesContainer = document.getElementById("saved-notes");
-            savedNotesContainer.innerHTML = "";
-
-            savedNotes.forEach(entry => {
-                let div = document.createElement("div");
-                div.className = "workout-item";
-                div.innerHTML = `<strong>${entry.date} - ${entry.workout}</strong><br>${entry.notes}`;
-                savedNotesContainer.appendChild(div);
-            });
-        }
-
-        function shareNotes() {
-            const savedNotes = JSON.parse(localStorage.getItem("workoutNotes")) || [];
-            if (savedNotes.length === 0) {
-                alert("No notes to share.");
-                return;
-            }
-
-            const latestNote = savedNotes[savedNotes.length - 1];
-            const shareText = `${latestNote.date}\n${latestNote.workout}\n\n${latestNote.notes}`;
+            const shareText = `${today}\n${workoutTitle}\n\n${notes}`;
 
             if (navigator.share) {
                 navigator.share({
@@ -209,7 +178,7 @@
                 })
                 .catch(error => console.log("Error sharing:", error));
             } else {
-                alert("Sharing is not supported on this browser.");
+                alert("Sharing not supported on this browser.");
             }
         }
 
